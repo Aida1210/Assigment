@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+    http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">
+ 
+    <display-name>RESTful CRUD Example</display-name>
+ 
+    <servlet>
+        <servlet-name>jerseyServlet</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <load-on-startup>1</load-on-startup> 
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jerseyServlet</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+ 
+ 
+</web-app>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+  http://maven.apache.org/maven-v4_0_0.xsd">
+  
+  
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.o7planning</groupId>
+  <artifactId>RESTfulCRUD</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>RESTfulCRUD Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+ 
+    <dependencies>
+ 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+ 
+ 
+ 
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+ 
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
+            <version>1.19.2</version>
+        </dependency>
+ 
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160810</version>
+        </dependency>
+ 
+        <!-- https://mvnrepository.com/artifact/com.sun.jersey/jersey-server -->
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.19.2</version>
+        </dependency>
+ 
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>1.19.2</version>
+        </dependency>
+ 
+
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
+ 
+ 
+    </dependencies>
+ 
+    <build>
+        <finalName>RESTfulCRUD</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <path>/RESTfulCRUD</path>
+                    <port>8080</port>
+                </configuration>
+            </plugin>
+ 
+        </plugins>
+    </build>
+ 
+ 
+</project>
+package org ass6;
+ 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+ 
+import org.o7planning.restfulcrud.model.Employee;
+ 
+public class EmployeeDAO {
+ 
+    private static final Map<String, Employee> empMap = new HashMap<String, Employee>();
+ 
+    static {
+        initEmps();
+    }
+ 
+    private static void initEmps() {
+        Employee emp1 = new Employee("E01", "Smith", "Clerk");
+        Employee emp2 = new Employee("E02", "Allen", "Salesman");
+        Employee emp3 = new Employee("E03", "Jones", "Manager");
+ 
+        empMap.put(emp1.getEmpNo(), emp1);
+        empMap.put(emp2.getEmpNo(), emp2);
+        empMap.put(emp3.getEmpNo(), emp3);
+    }
+ 
+    public static Employee getEmployee(String empNo) {
+        return empMap.get(empNo);
+    }
+ 
+    public static Employee addEmployee(Employee emp) {
+        empMap.put(emp.getEmpNo(), emp);
+        return emp;
+    }
+ 
+    public static Employee updateEmployee(Employee emp) {
+        empMap.put(emp.getEmpNo(), emp);
+        return emp;
+    }
+ 
+    public static void deleteEmployee(String empNo) {
+        empMap.remove(empNo);
+    }
+ 
+    public static List<Employee> getAllEmployees() {
+        Collection<Employee> c = empMap.values();
+        List<Employee> list = new ArrayList<Employee>();
+        list.addAll(c);
+        return list;
+    }
+     
+    List<Employee> list;
+ 
+}
+package ass6;
+ 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+ 
+@XmlRootElement(name = "employee")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Employee {
+ 
+    private String empNo;
+    private String empName;
+    private String position;
+ 
+    // This default constructor is required if there are other constructors.
+    public Employee() {
+ 
+    }
+ 
+    public Employee(String empNo, String empName, String position) {
+        this.empNo = empNo;
+        this.empName = empName;
+        this.position = position;
+    }
+ 
+    public String getEmpNo() {
+        return empNo;
+    }
+ 
+    public void setEmpNo(String empNo) {
+        this.empNo = empNo;
+    }
+ 
+    public String getEmpName() {
+        return empName;
+    }
+ 
+    public void setEmpName(String empName) {
+        this.empName = empName;
+    }
+ 
+    public String getPosition() {
+        return position;
+    }
+ 
+    public void setPosition(String position) {
+        this.position = position;
+    }
+ 
+}
+package ass6;
+ 
+import java.util.List;
+ 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+ 
+import org.o7planning.restfulcrud.dao.EmployeeDAO;
+import org.o7planning.restfulcrud.model.Employee;
+ 
+@Path("/employees")
+public class EmployeeService {
+ 
+    // URI:
+    // /contextPath/servletPath/employees
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public List<Employee> getEmployees_JSON() {
+        List<Employee> listOfCountries = EmployeeDAO.getAllEmployees();
+        return listOfCountries;
+    }
+ 
+    // URI:
+    // /contextPath/servletPath/employees/{empNo}
+    @GET
+    @Path("/{empNo}")
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Employee getEmployee(@PathParam("empNo") String empNo) {
+        return EmployeeDAO.getEmployee(empNo);
+    }
+ 
+    // URI:
+    // /contextPath/servletPath/employees
+    @POST
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Employee addEmployee(Employee emp) {
+        return EmployeeDAO.addEmployee(emp);
+    }
+ 
+    // URI:
+    // /contextPath/servletPath/employees
+    @PUT
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Employee updateEmployee(Employee emp) {
+        return EmployeeDAO.updateEmployee(emp);
+    }
+ 
+    @DELETE
+    @Path("/{empNo}")
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public void deleteEmployee(@PathParam("empNo") String empNo) {
+        EmployeeDAO.deleteEmployee(empNo);
+    }
+ 

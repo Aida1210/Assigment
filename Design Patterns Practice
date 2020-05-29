@@ -1,3 +1,390 @@
+
+//Singleton Pattern Example
+public class Singleton  {    
+    private Singleton() {}
+     
+    private static class SingletonHolder {    
+        public static final Singleton instance = new Singleton();
+    }
+ 
+    public static Singleton getInstance() {    
+        return SingletonHolder.instance;    
+    }
+}
+//Factory Method Design
+public interface Polygon {
+    String getType();
+}
+public class PolygonFactory {
+    public Polygon getPolygon(int numberOfSides) {
+        if(numberOfSides == 3) {
+            return new Triangle();
+        }
+        if(numberOfSides == 4) {
+            return new Square();
+        }
+        if(numberOfSides == 5) {
+            return new Pentagon();
+        }
+        if(numberOfSides == 7) {
+            return new Heptagon();
+        }
+        else if(numberOfSides == 8) {
+            return new Octagon();
+        }
+        return null;
+    }
+}
+// Builder Pattern
+public class BankAccount {
+     
+    private String name;
+    private String accountNumber;
+    private String email;
+    private boolean newsletter;
+ 
+    // constructors/getters
+     
+    public static class BankAccountBuilder {
+        // builder code
+    }
+}
+public static class BankAccountBuilder {
+     
+    private String name;
+    private String accountNumber;
+    private String email;
+    private boolean newsletter;
+     
+    public BankAccountBuilder(String name, String accountNumber) {
+        this.name = name;
+        this.accountNumber = accountNumber;
+    }
+ 
+    public BankAccountBuilder withEmail(String email) {
+        this.email = email;
+        return this;
+    }
+ 
+    public BankAccountBuilder wantNewsletter(boolean newsletter) {
+        this.newsletter = newsletter;
+        return this;
+    }
+     
+    public BankAccount build() {
+        return new BankAccount(this);
+    }
+}
+BankAccount newAccount = new BankAccount
+  .BankAccountBuilder("Jon", "22738022275")
+  .withEmail("jon@example.com")
+  .wantNewsletter(true)
+  .build();
+//Adapter
+interface Shape {
+    void draw(int x, int y, int z, int j);
+}
+
+class Line {
+    public void draw(int x1, int y1, int x2, int y2) {
+        System.out.println("Line from point A(" + x1 + ";" + y1 + "), to point B(" + x2 + ";" + y2 + ")");
+    }
+}
+
+class Rectangle {
+    public void draw(int x, int y, int width, int height) {
+        System.out.println("Rectangle with coordinate left-down point (" + x + ";" + y + "), width: " + width
+                + ", height: " + height);
+    }
+}
+
+class LineAdapter implements Shape {
+    private Line adaptee;
+
+    public LineAdapter(Line line) {
+        this.adaptee = line;
+    }
+
+    @Override
+    public void draw(int x1, int y1, int x2, int y2) {
+        adaptee.draw(x1, y1, x2, y2);
+    }
+}
+
+class RectangleAdapter implements Shape {
+    private Rectangle adaptee;
+
+    public RectangleAdapter(Rectangle rectangle) {
+        this.adaptee = rectangle;
+    }
+
+    @Override
+    public void draw(int x1, int y1, int x2, int y2) {
+        int x = Math.min(x1, x2);
+        int y = Math.min(y1, y2);
+        int width = Math.abs(x2 - x1);
+        int height = Math.abs(y2 - y1);
+        adaptee.draw(x, y, width, height);
+    }
+}
+
+public class AdapterDemo {
+    public static void main(String[] args) {
+        Shape[] shapes = {new RectangleAdapter(new Rectangle()),
+                          new LineAdapter(new Line())};
+        int x1 = 10, y1 = 20;
+        int x2 = 30, y2 = 60;
+        for (Shape shape : shapes) {
+            shape.draw(x1, y1, x2, y2);
+        }
+    }
+}
+//Filter
+public class Person {
+	
+   private String name;
+   private String gender;
+   private String maritalStatus;
+
+   public Person(String name, String gender, String maritalStatus){
+      this.name = name;
+      this.gender = gender;
+      this.maritalStatus = maritalStatus;		
+   }
+
+   public String getName() {
+      return name;
+   }
+   public String getGender() {
+      return gender;
+   }
+   public String getMaritalStatus() {
+      return maritalStatus;
+   }	
+}
+import java.util.List;
+
+public interface Criteria {
+   public List<Person> meetCriteria(List<Person> persons);
+}
+import java.util.ArrayList;
+import java.util.List;
+
+public class CriteriaMale implements Criteria {
+
+   @Override
+   public List<Person> meetCriteria(List<Person> persons) {
+      List<Person> malePersons = new ArrayList<Person>(); 
+      
+      for (Person person : persons) {
+         if(person.getGender().equalsIgnoreCase("MALE")){
+            malePersons.add(person);
+         }
+      }
+      return malePersons;
+   }
+}
+import java.util.ArrayList;
+import java.util.List;
+
+public class CriteriaFemale implements Criteria {
+
+   @Override
+   public List<Person> meetCriteria(List<Person> persons) {
+      List<Person> femalePersons = new ArrayList<Person>(); 
+      
+      for (Person person : persons) {
+         if(person.getGender().equalsIgnoreCase("FEMALE")){
+            femalePersons.add(person);
+         }
+      }
+      return femalePersons;
+   }
+}
+import java.util.ArrayList;
+import java.util.List;
+
+public class CriteriaSingle implements Criteria {
+
+   @Override
+   public List<Person> meetCriteria(List<Person> persons) {
+      List<Person> singlePersons = new ArrayList<Person>(); 
+      
+      for (Person person : persons) {
+         if(person.getMaritalStatus().equalsIgnoreCase("SINGLE")){
+            singlePersons.add(person);
+         }
+      }
+      return singlePersons;
+   }
+}
+import java.util.List;
+
+public class AndCriteria implements Criteria {
+
+   private Criteria criteria;
+   private Criteria otherCriteria;
+
+   public AndCriteria(Criteria criteria, Criteria otherCriteria) {
+      this.criteria = criteria;
+      this.otherCriteria = otherCriteria; 
+   }
+
+   @Override
+   public List<Person> meetCriteria(List<Person> persons) {
+   
+      List<Person> firstCriteriaPersons = criteria.meetCriteria(persons);		
+      return otherCriteria.meetCriteria(firstCriteriaPersons);
+   }
+}
+import java.util.List;
+
+public class OrCriteria implements Criteria {
+
+   private Criteria criteria;
+   private Criteria otherCriteria;
+
+   public OrCriteria(Criteria criteria, Criteria otherCriteria) {
+      this.criteria = criteria;
+      this.otherCriteria = otherCriteria; 
+   }
+
+   @Override
+   public List<Person> meetCriteria(List<Person> persons) {
+      List<Person> firstCriteriaItems = criteria.meetCriteria(persons);
+      List<Person> otherCriteriaItems = otherCriteria.meetCriteria(persons);
+
+      for (Person person : otherCriteriaItems) {
+         if(!firstCriteriaItems.contains(person)){
+            firstCriteriaItems.add(person);
+         }
+      }	
+      return firstCriteriaItems;
+   }
+}
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class CriteriaPatternDemo {
+   public static void main(String[] args) {
+      List<Person> persons = new ArrayList<Person>();
+
+      persons.add(new Person("Robert","Male", "Single"));
+      persons.add(new Person("John", "Male", "Married"));
+      persons.add(new Person("Laura", "Female", "Married"));
+      persons.add(new Person("Diana", "Female", "Single"));
+      persons.add(new Person("Mike", "Male", "Single"));
+      persons.add(new Person("Bobby", "Male", "Single"));
+
+      Criteria male = new CriteriaMale();
+      Criteria female = new CriteriaFemale();
+      Criteria single = new CriteriaSingle();
+      Criteria singleMale = new AndCriteria(single, male);
+      Criteria singleOrFemale = new OrCriteria(single, female);
+
+      System.out.println("Males: ");
+      printPersons(male.meetCriteria(persons));
+
+      System.out.println("\nFemales: ");
+      printPersons(female.meetCriteria(persons));
+
+      System.out.println("\nSingle Males: ");
+      printPersons(singleMale.meetCriteria(persons));
+
+      System.out.println("\nSingle Or Females: ");
+      printPersons(singleOrFemale.meetCriteria(persons));
+   }
+
+   public static void printPersons(List<Person> persons){
+   
+      for (Person person : persons) {
+         System.out.println("Person : [ Name : " + person.getName() + ", Gender : " + person.getGender() + ", Marital Status : " + person.getMaritalStatus() + " ]");
+      }
+   }      
+}
+//Decator
+interface I { 
+    void doIt(); 
+}
+
+class A implements I { 
+    public void doIt() { 
+        System.out.print('A'); 
+    } 
+}
+
+abstract class D implements I {
+    private I core;
+    public D(I inner) {
+        core = inner;
+    }
+
+    public void doIt() {
+        core.doIt();
+    }
+}
+
+class X extends D {
+    public X(I inner) {
+        super(inner);
+    }
+
+    public void doIt() {
+        super.doIt();
+        doX();
+    }
+
+    private void doX() {
+        System.out.print('X');
+    }
+}
+
+class Y extends D {
+    public Y(I inner) {
+        super(inner);
+    }
+
+    public void doIt()  {
+        super.doIt();
+        doY();
+    }
+
+    private void doY() {
+        System.out.print('Y');
+    }
+}
+
+class Z extends D {
+    public Z(I inner) {
+        super(inner);
+    }
+
+    public void doIt()  {
+        super.doIt();
+        doZ();
+    }
+
+    private void doZ() {
+        System.out.print('Z');
+    }
+}
+
+public class DecoratorDemo {
+    public static void main( String[] args ) {
+        I[] array = {new X(new A()), new Y(new X(new A())),
+                new Z(new Y(new X(new A())))};
+        for (I anArray : array) {
+            anArray.doIt();
+            System.out.print("  ");
+        }
+    }
+}
+
+
+
+
 //Creational Design Patterns: Builder Pattern
 import java.util.HashSet;
 import java.util.Set;
